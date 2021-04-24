@@ -24,7 +24,7 @@ class SimpleSocket {
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct($socket) {
-		if (!is_resource($socket) && strtolower(@get_resource_type($socket)) != 'socket') {
+		if (!is_resource($socket) && (is_a($socket, 'Socket') || strtolower(@get_resource_type($socket))) != 'socket') {
 			throw new \InvalidArgumentException('Socket resource is required!');
 		}
 		$this->socket = $socket;
@@ -84,13 +84,13 @@ class SimpleSocket {
 		}
 
 		foreach ($readSocketsResources as $socketResource) {
-			$out['read'][] = $readSockets[intval($socketResource)];
+			$out['read'][] = $readSockets[spl_object_id ($socketResource)];
 		}
 		foreach ($writeSocketsResources as $socketResource) {
-			$out['write'][] = $writeSockets[intval($socketResource)];
+			$out['write'][] = $writeSockets[spl_object_id ($socketResource)];
 		}
 		foreach ($exceptSocketsResources as $socketResource) {
-			$out['except'][] = $exceptSockets[intval($socketResource)];
+			$out['except'][] = $exceptSockets[spl_object_id ($socketResource)];
 		}
 
 		return $out;
@@ -120,7 +120,7 @@ class SimpleSocket {
 	 * @return int the id of the socket resource
 	 */
 	public function getResourceId() {
-		return intval($this->socket);
+		return spl_object_id ($this->socket);
 	}
 
 	/**
